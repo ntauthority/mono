@@ -10012,6 +10012,9 @@ mono_class_get_exception_for_failure (MonoClass *klass)
 		g_free (str);
 		ex = mono_get_exception_type_load (name, astr);
 		g_free (astr);
+
+		printf("%s\n", exception_data);
+
 		return ex;
 	}
 	case MONO_EXCEPTION_MISSING_METHOD: {
@@ -10120,6 +10123,8 @@ is_valid_family_access (MonoClass *access_klass, MonoClass *member_klass, MonoCl
 	return TRUE;
 }
 
+#include <windows.h>
+
 static gboolean
 can_access_internals (MonoAssembly *accessing, MonoAssembly* accessed)
 {
@@ -10134,6 +10139,10 @@ can_access_internals (MonoAssembly *accessing, MonoAssembly* accessed)
 	if (mono_security_core_clr_enabled ()) {
 		if (!mono_security_core_clr_can_access_internals (accessing->image, accessed->image))
 			return FALSE;
+
+		/* CitizenFX change: platform images are god */
+		if (mono_security_core_clr_is_platform_image(accessing->image) && !mono_security_core_clr_is_platform_image(accessed->image))
+			return TRUE;
 	}
 
 	mono_assembly_load_friends (accessed);
@@ -10146,9 +10155,15 @@ can_access_internals (MonoAssembly *accessing, MonoAssembly* accessed)
 			continue;
 		if (friend_->public_key_token [0]) {
 			if (!accessing->aname.public_key_token [0])
-				continue;
+			{
+				OutputDebugStringA("PUBLIC KEY TOKENS NOT EXISTENT\n");
+				//continue;
+			}
 			if (!mono_public_tokens_are_equal (friend_->public_key_token, accessing->aname.public_key_token))
-				continue;
+			{
+				OutputDebugStringA("PUBLIC KEY TOKENS NOT EQUAL\n");
+				//continue;
+			}
 		}
 		return TRUE;
 	}
@@ -10248,6 +10263,12 @@ can_access_type (MonoClass *access_klass, MonoClass *member_klass)
 		return TRUE;
 
 	case TYPE_ATTRIBUTE_NESTED_PRIVATE:
+		/* CitizenFX override: platform is god, but only for user code */
+		if (mono_security_core_clr_is_platform_image(access_klass->image) && !mono_security_core_clr_is_platform_image(member_klass->image))
+		{
+			return TRUE;
+		}
+
 		return is_nesting_type (member_klass, access_klass);
 
 	case TYPE_ATTRIBUTE_NESTED_FAMILY:

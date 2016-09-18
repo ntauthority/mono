@@ -451,7 +451,7 @@ void GC_push_all_stacks()
       }
     }
   }
-  if (!found_me) ABORT("Collecting from unknown thread.");
+  //if (!found_me) ABORT("Collecting from unknown thread.");
 }
 
 void GC_get_next_stack(char *start, char **lo, char **hi)

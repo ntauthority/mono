@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <windows.h>
 
 /* The current fatal levels, error is always fatal */
 static GLogLevelFlags fatal = G_LOG_LEVEL_ERROR;
@@ -107,6 +108,16 @@ g_logv (const gchar *log_domain, GLogLevelFlags log_level, const gchar *format, 
 	
 	if (g_vasprintf (&msg, format, args) < 0)
 		return;
+
+	{
+		char msgOut[32768];
+
+		sprintf(&msgOut, "%s%s%s\n", log_domain != NULL ? log_domain : "",
+				log_domain != NULL ? ": " : "",
+				msg);
+
+		OutputDebugStringA(msgOut);
+	}
 
 	default_log_func (log_domain, log_level, msg, default_log_func_user_data);
 	g_free (msg);

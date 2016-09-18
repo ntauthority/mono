@@ -494,6 +494,8 @@ guint mono_arch_unwindinfo_get_size (gpointer monoui);
 void mono_arch_unwindinfo_install_unwind_info (gpointer* monoui, gpointer code, guint code_size);
 
 #define MONO_ARCH_HAVE_UNWIND_TABLE 1
+
+#define MONO_ARCH_NOMAP32BIT
 #endif
 
 CallInfo* mono_arch_get_call_info (MonoMemPool *mp, MonoMethodSignature *sig);

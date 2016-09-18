@@ -91,6 +91,8 @@ namespace System.Configuration {
 			  PerUserRoamingAndLocal = \Documents and Settings\<username>\Local Settings\Application Data\...
 			*/
 
+			exePath = "._.exe";
+
 			switch (userLevel) {
 			case ConfigurationUserLevel.None:
 				if (exePath == null || exePath.Length == 0) {
