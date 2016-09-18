@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <windows.h>
 
 #include "vasprintf.h"
 
@@ -154,7 +155,17 @@ g_logv (const gchar *log_domain, GLogLevelFlags log_level, const gchar *format, 
 	printf ("%s%s%s\n",
             log_domain != NULL ? log_domain : "",
             log_domain != NULL ? ": " : "",
-            msg);
+			msg);
+
+	{
+		char msgOut[32768];
+
+		sprintf(&msgOut, "%s%s%s\n", log_domain != NULL ? log_domain : "",
+				log_domain != NULL ? ": " : "",
+				msg);
+
+		OutputDebugStringA(msgOut);
+	}
 #else
 #if MONOTOUCH
 	FILE *target = stderr;
