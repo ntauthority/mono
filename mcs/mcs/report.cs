@@ -913,77 +913,30 @@ namespace Mono.CSharp {
 			DebugSave,
 		}
 
-		readonly Stopwatch[] timers;
-		Stopwatch total;
-
 		public TimeReporter (bool enabled)
 		{
 			if (!enabled)
 				return;
-
-			timers = new Stopwatch[System.Enum.GetValues(typeof (TimerType)).Length];
 		}
 
 		public void Start (TimerType type)
 		{
-			if (timers != null) {
-				var sw = new Stopwatch ();
-				timers[(int) type] = sw;
-				sw.Start ();
-			}
 		}
 
 		public void StartTotal ()
 		{
-			total = new Stopwatch ();
-			total.Start ();
 		}
 
 		public void Stop (TimerType type)
 		{
-			if (timers != null) {
-				timers[(int) type].Stop ();
-			}
 		}
 
 		public void StopTotal ()
 		{
-			total.Stop ();
 		}
 
 		public void ShowStats ()
 		{
-			if (timers == null)
-				return;
-
-			Dictionary<TimerType, string> timer_names = new Dictionary<TimerType,string> {
-				{ TimerType.ParseTotal, "Parsing source files" },
-				{ TimerType.AssemblyBuilderSetup, "Assembly builder setup" },
-				{ TimerType.CreateTypeTotal, "Compiled types created" },
-				{ TimerType.ReferencesLoading, "Referenced assemblies loading" },
-				{ TimerType.ReferencesImporting, "Referenced assemblies importing" },
-				{ TimerType.PredefinedTypesInit, "Predefined types initialization" },
-				{ TimerType.ModuleDefinitionTotal, "Module definition" },
-				{ TimerType.EmitTotal, "Resolving and emitting members blocks" },
-				{ TimerType.CloseTypes, "Module types closed" },
-				{ TimerType.Resouces, "Embedding resources" },
-				{ TimerType.OutputSave, "Writing output file" },
-				{ TimerType.DebugSave, "Writing debug symbols file" },
-			};
-
-			int counter = 0;
-			double percentage = (double) total.ElapsedMilliseconds / 100;
-			long subtotal = total.ElapsedMilliseconds;
-			foreach (var timer in timers) {
-				string msg = timer_names[(TimerType) counter++];
-				var ms = timer == null ? 0 : timer.ElapsedMilliseconds;
-				Console.WriteLine ("{0,4:0.0}% {1,5}ms {2}", ms / percentage, ms, msg);
-				subtotal -= ms;
-			}
-
-			Console.WriteLine ("{0,4:0.0}% {1,5}ms Other tasks", subtotal / percentage, subtotal);
-			Console.WriteLine ();
-			Console.WriteLine ("Total elapsed time: {0}", total.Elapsed);
 		}
 	}
 
