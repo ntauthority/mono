@@ -801,6 +801,10 @@ mono_security_core_clr_ensure_dynamic_method_resolved_object (gpointer ref, Mono
 		/* fields coming from platform code have extra protection (accessibility check) */
 		if (mono_security_core_clr_is_platform_image (klass->image)) {
 			MonoMethod *caller = get_reflection_caller ();
+			if (!strcmp(get_method_full_name(caller), "System.Linq.Expressions.Compiler.LambdaCompiler:CreateDelegate ()") && !check_field_access(caller, field))
+			{
+				printf("\n");
+			}
 			/* XXX Critical code probably can do this / need some test cases (safer off otherwise) XXX */
 			if (!check_field_access (caller, field)) {
 				return get_field_access_exception (
