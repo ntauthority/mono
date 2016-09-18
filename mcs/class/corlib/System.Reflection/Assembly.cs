@@ -120,15 +120,6 @@ namespace System.Reflection {
 		private string GetCodeBase (bool escaped)
 		{
 			string cb = get_code_base (escaped);
-#if !NET_2_1
-			if (SecurityManager.SecurityEnabled) {
-				// we cannot divulge local file informations
-				if (String.Compare ("FILE://", 0, cb, 0, 7, true, CultureInfo.InvariantCulture) == 0) {
-					string file = cb.Substring (7);
-					new FileIOPermission (FileIOPermissionAccess.PathDiscovery, file).Demand ();
-				}
-			}
-#endif
 			return cb;
 		}
 
